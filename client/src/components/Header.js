@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class Header extends Component {
   render() {
     return (
-      <nav>
+      <nav className="red">
         <div className="nav-wrapper">
           <a className="left brand-logo">Hot Feedback</a>
           <ul className="right">
