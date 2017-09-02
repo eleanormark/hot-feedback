@@ -8,11 +8,13 @@ class Payments extends Component {
     return (
       <StripeCheckout
         name="Hot Feedback"
-        description="$5 for 5 email credits"
+        description="$5 for 5 email survey credits"
         amount={500}
         token={token => console.log("token",token)}
         stripeKey={process.env.REACT_APP_STRIPE_KEY}
-      />
+      >
+      <button className="btn amber darken-2">Add CREDITS</button>
+      </StripeCheckout>
     );
   }
 }
