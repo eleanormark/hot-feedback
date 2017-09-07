@@ -10,31 +10,43 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 const Survey = mongoose.model('surveys');
 
 module.exports = app => {
-  app.get('/api/surveys/thanks', (req, res) => {
+  app.get('/api/surveys/:surveyId/:choice', (req, res) => {
     res.send('Thanks for voting!');
   });
 
   // event notifcation from sendgrid using local tunnel
   // feedback request when a recipient click a selection in the email
+
   app.post('/api/surveys/webhooks', (req, res) => {
-    const events = _.map(req.body, event => {
-      const pathname = new URL(event.url).pathname;
-      const p = new Path('/api/surveys/:surveyId/:choice');
+    const p = new Path('/api/surveys/:surveyId/:choice');
 
-      // console.log(p.test(pathname));
-      const match = p.test(pathname);
-      if (match) {
-        return { email: event.email, survyeId: match.surveyId, choice: match.choice };
-      }
-    });
+    _.chain(req.body)
+      .map(({ email, url }) => {
+        const match = p.test(new URL(url).pathname);
+        if (match) {
+          return { email, surveyId: match.surveyId, choice: match.choice };
+        }
+      })
+      .compact()
+      .uniqBy('email', 'surveyId')
+      .each(({ surveyId, email, choice }) => {
+        Survey.updateOne(
+          {
+            _id: surveyId,
+            recipients: {
+              $elemMatch: { email: email, responded: false }
+            }
+          },
+          {
+            $inc: { [choice]: 1 },
+            $set: { 'recipients.$.responded': true },
+            lastResponded: new Date()
+          }
+        ).exec();
+      })
+      .value();
 
-    const compactEvents = _.compact(events);
-    const uniqueEvents = _.uniqBy(compactEvents, 'email', 'surveyId');
-    console.log(uniqueEvents);
-
-    // console.log("==== webhooks ====", req.body);
-    //send empty obj to sendgrind to close rquest and not to leave sendgrind hanging
-    // res.send({});
+    res.send({});
   });
 
   app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
