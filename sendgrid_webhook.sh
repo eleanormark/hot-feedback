@@ -10,7 +10,7 @@
 # to run, type ./sendgrid_webhook.sh in the terminal
 
 function localtunnel {
-  lt -s hotfeedbackdev004v01 --port 5000
+  lt -s h0tf33d68ckdev004v01 --port 5000
 }
 until localtunnel; do
 echo "localtunnel server crashed"

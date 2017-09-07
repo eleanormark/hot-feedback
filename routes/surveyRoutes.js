@@ -1,3 +1,6 @@
+const _ = require('lodash');
+const Path = require('path-parser');
+const { URL } = require('url');
 const mongoose = require('mongoose');
 const requireLogin = require('../middlewares/requireLogin');
 const requireCredits = require('../middlewares/requireCredits');
@@ -11,11 +14,27 @@ module.exports = app => {
     res.send('Thanks for voting!');
   });
 
+  // event notifcation from sendgrid using local tunnel
+  // feedback request when a recipient click a selection in the email
   app.post('/api/surveys/webhooks', (req, res) => {
-    console.log("==== webhooks =========", req.body);
+    const events = _.map(req.body, event => {
+      const pathname = new URL(event.url).pathname;
+      const p = new Path('/api/surveys/:surveyId/:choice');
 
-    //send empty obj to sendgrind so not to leave sendgrind hanging
-    res.send({});
+      // console.log(p.test(pathname));
+      const match = p.test(pathname);
+      if (match) {
+        return { email: event.email, survyeId: match.surveyId, choice: match.choice };
+      }
+    });
+
+    const compactEvents = _.compact(events);
+    const uniqueEvents = _.uniqBy(compactEvents, 'email', 'surveyId');
+    console.log(uniqueEvents);
+
+    // console.log("==== webhooks ====", req.body);
+    //send empty obj to sendgrind to close rquest and not to leave sendgrind hanging
+    // res.send({});
   });
 
   app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
