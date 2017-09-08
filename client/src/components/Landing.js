@@ -2,7 +2,7 @@ import React from 'react';
 
 const Landing = () => {
   return (
-    <div style={{textAlign: 'center'}}>
+    <div style={{ textAlign: 'center' }}>
       <h1>Hot Feedback</h1>
       Collect feedback from your users
     </div>

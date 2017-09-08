@@ -10,14 +10,12 @@ import { createStore, applyMiddleware } from 'redux';
 // this allows us to manually dispatch an action at anytime.
 import reduxThunk from 'redux-thunk';
 
-
 import App from './components/App';
 import reducers from './reducers';
 
 // Development REST Clienttemp test code
 import axios from 'axios';
 window.axios = axios;
-
 
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
 

@@ -11,7 +11,6 @@ import SurveyNew from './surveys/SurveyNew';
 class App extends Component {
   componentDidMount() {
     this.props.fetchUser();
-
   }
 
   render() {
