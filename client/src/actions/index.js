@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FETCH_USER } from './types';
+import { FETCH_USER, FETCH_SURVEYS } from './types';
 
 // export const fetchUser = () => {
 //   //redux-thunk will automatically call the return function and pass in the dispatch function
@@ -10,7 +10,7 @@ import { FETCH_USER } from './types';
 //   };
 // };
 
-export const fetchUser = () => async (dispatch) => {
+export const fetchUser = () => async () => {
   const res = await axios.get('/api/current_user');
   dispatch({ type: FETCH_USER, payload: res.data });
 };
